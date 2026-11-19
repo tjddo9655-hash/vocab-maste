@@ -108,4 +108,54 @@ html,body,button,.btn,.tabs,.card,.choice,.seg-btn{touch-action:manipulation}
 .header-build time{display:block;color:#7e8ba0;font-size:10px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.15px;line-height:1.4;white-space:nowrap}
 .header-build .build-label{color:#7e8ba0;font-size:10px;line-height:1.2}
 @media(max-width:380px){.header-build time{font-size:9px;letter-spacing:-.3px}h1{font-size:26px}}
-</style></head><body><main><header><div><h1>단어마스터</h1><div class="muted">뜻을 이해하는 영단어 학습</div></div><div class="header-build"><span class="pill">오프라인 지원</span><span class="build-label">최종 업데이트 · v24</span><time datetime="2026-11-19T19:32:31+09:00" title="한국 표준시(KST) 기준">2026.11.19 19:32:31</time></div></header><section id="home"></section><section id="quiz" class="hidden"></section><section id="words" class="hidden"></section><section id="mistakes" class="hidden"></section><section id="history" class="hidden"></section></main><nav class="tabs"><div><button data-tab="home" class="active">홈</button><button data-tab="quiz">시험</button><button data-tab="words">단어장</button><button data-tab="history">기록</button></div></nav><script src="wordmaster-data.js?v=24"></script><script src="synonyms-data.js?v=24"></script><script src="app.js?v=24"></script></body></html>
+
+/* v25: answer result is *masked from the first rendered frame* and reveals in
+   layout, not just as independent opacity animations. Works for MCQ and input. */
+#quiz #feedback.motion-feedback{display:block;margin-top:0}
+#quiz #feedback.motion-feedback>.feedback-motion-inner{display:grid;grid-template-rows:0fr;transition:grid-template-rows 1200ms cubic-bezier(.22,1,.36,1);min-height:0}
+#quiz #feedback.motion-feedback.is-open>.feedback-motion-inner{grid-template-rows:1fr}
+#quiz #feedback.motion-feedback>.feedback-motion-inner>.feedback{min-height:0;overflow:hidden}
+#quiz #feedback.motion-feedback .feedback{margin:0!important;padding:10px!important;opacity:0;transform:translateY(16px);transition:opacity 1050ms ease,transform 1150ms cubic-bezier(.22,1,.36,1)}
+#quiz #feedback.motion-feedback.is-open .feedback{opacity:1;transform:translateY(0)}
+#quiz #feedback.motion-feedback .meaning-section{opacity:0;transform:translateY(12px);transition:opacity 950ms ease 250ms,transform 1100ms cubic-bezier(.22,1,.36,1) 240ms;animation:none!important}
+#quiz #feedback.motion-feedback.is-open .meaning-section{opacity:1;transform:translateY(0)}
+#quiz #feedback.motion-feedback .meaning-section.alt{transition-delay:380ms,360ms}
+#quiz #feedback.motion-feedback .meaning-text{opacity:0;transform:translateY(8px);transition:opacity 1000ms ease 350ms,transform 1100ms cubic-bezier(.22,1,.36,1) 340ms;animation:none!important}
+#quiz #feedback.motion-feedback.is-open .meaning-text{opacity:1;transform:translateY(0)}
+#quiz #feedback.motion-feedback .verdict-mark,#quiz #feedback.motion-feedback .verdict-line strong{animation:none!important}
+#quiz #feedback.motion-feedback .confidence-row{opacity:0;transform:translateY(8px);transition:opacity 700ms ease 380ms,transform 850ms ease 320ms}
+#quiz #feedback.motion-feedback.is-open .confidence-row{opacity:1;transform:none}
+#quiz #feedback.motion-feedback #next{opacity:0;pointer-events:none;transition:opacity 650ms ease 420ms}
+#quiz #feedback.motion-feedback.is-open #next{opacity:1;pointer-events:auto}
+/* Keep quiz geometry compact before as well as after answer submission.
+   Otherwise a display:none header and instant margin shrink look like a jump. */
+body.quiz-active header{display:none!important}
+body.quiz-active main{padding-top:4px!important;padding-bottom:calc(140px + env(safe-area-inset-bottom))!important}
+body.quiz-active #quiz>.card{padding:12px 14px!important;margin:0!important}
+body.quiz-active #quiz .word{font-size:clamp(30px,8vw,42px)!important;margin:12px 0 16px!important;line-height:1.1!important}
+body.quiz-active #quiz .topgap{margin-top:8px}
+body.quiz-active #quiz .progress{margin-top:8px}
+body.quiz-active #quiz .row strong{font-size:12px}
+body.quiz-active #quiz .pos-hint{margin:0 0 14px}
+/* v25 home: overall percentage and last learned position */
+.learning-hero{padding:28px 27px;background:linear-gradient(140deg,#172b55,#3963c1)}
+.hero-topline{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:15px;font-weight:800}
+.hero-topline span{font-size:10px;color:#d3e2ff;font-weight:600;white-space:nowrap}
+.hero-progress{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:15px 0 15px}
+.hero-progress strong{font-size:52px;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums}
+.hero-progress span{font-size:13px;color:#f0f5ff;font-weight:600;text-align:right}
+.hero-track{height:11px;background:#ffffff40;border-radius:99px;overflow:hidden}
+.hero-track>div{height:100%;background:#f9fdff;border-radius:99px;transition:width .7s ease;min-width:0}
+.hero-subline{font-size:12px;color:#e1eaff;margin:11px 0 19px}
+.recent-learning{padding:15px 16px;margin:0 0 18px;border-radius:15px;background:#ffffff16;border:1px solid #ffffff29}
+.recent-learning-top{display:flex;justify-content:space-between;gap:9px;color:#dbe8ff;font-size:11px;font-weight:650}
+.recent-learning-value{font-size:17px;font-weight:850;margin-top:8px;line-height:1.5}
+.recent-learning-value span{font-size:12px;font-weight:550;color:#ecf2ff}
+.recent-learning-word{margin-top:4px;font-size:13px;font-weight:700;overflow-wrap:anywhere}
+.recent-learning-word span{font-weight:450;color:#e0ebff}
+.learning-hero button{padding:15px 17px!important}
+.overview-card .stat{padding:18px 4px}
+.overview-card p{margin:14px 0 0;font-size:11px}
+@media(max-width:390px){.learning-hero{padding:23px 19px}.hero-progress strong{font-size:45px}.hero-topline span{font-size:9px}}
+@media(prefers-reduced-motion:reduce){#quiz #feedback.motion-feedback>.feedback-motion-inner{transition:none!important}#quiz #feedback.motion-feedback .feedback,#quiz #feedback.motion-feedback .meaning-section,#quiz #feedback.motion-feedback .meaning-text{transition:none!important}#quiz #feedback.motion-feedback.is-open .feedback,#quiz #feedback.motion-feedback.is-open .meaning-section,#quiz #feedback.motion-feedback.is-open .meaning-text{opacity:1;transform:none}}
+</style></head><body><main><header><div><h1>단어마스터</h1><div class="muted">뜻을 이해하는 영단어 학습</div></div><div class="header-build"><span class="pill">오프라인 지원</span><span class="build-label">최종 업데이트 · v25</span><time datetime="2026-11-19T19:43:12+09:00" title="한국 표준시(KST) 기준">2026.11.19 19:43:12</time></div></header><section id="home"></section><section id="quiz" class="hidden"></section><section id="words" class="hidden"></section><section id="mistakes" class="hidden"></section><section id="history" class="hidden"></section></main><nav class="tabs"><div><button data-tab="home" class="active">홈</button><button data-tab="quiz">시험</button><button data-tab="words">단어장</button><button data-tab="history">기록</button></div></nav><script src="wordmaster-data.js?v=25"></script><script src="synonyms-data.js?v=25"></script><script src="app.js?v=25"></script></body></html>
