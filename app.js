@@ -108,10 +108,69 @@ function quiz(){
   pool=pool.slice(0,Number(settings.count));session={mode:Number(settings.mode),items:pool,index:0,answers:[],checked:false,started:now()};showQuestion();
  };
 }
-function showQuestion(){stopAdvance();if(session)session.started=now();document.body.classList.remove("answer-revealed");const q=session;if(q.index>=q.items.length){const n=q.answers.filter(a=>a.kind==='correct').length;$('#quiz').innerHTML=`<div class="card"><h2>시험 완료</h2><div class="word">${n} / ${q.items.length}</div><p style="text-align:center">학습 진행률 100% · 정답률 ${Math.round(n/q.items.length*100)}%</p><p class="muted" style="text-align:center">틀린 단어는 오답노트에 저장됩니다. 시험 중 추가 출제하지 않습니다.</p><button id="again" style="width:100%">다른 시험 보기</button><button id="viewMistakes" class="secondary" style="width:100%;margin-top:10px">오답노트 보기</button></div>`;$('#again').onclick=()=>{stopAdvance();session=null;quiz()};$('#viewMistakes').onclick=()=>{session=null;go('mistakes')};return}const w=q.items[q.index], mode=q.mode;let question=mode===1||mode===3?w.en:meanings(w)[0];let done=q.index+(q.checked?1:0), pct=Math.round(done/q.items.length*1000)/10;let html=`<div class="card"><div class="row"><span class="pill">${q.index+1} / ${q.items.length}</span><span class="muted">DAY ${w.day} · ${['','영→한 선택','한→영 선택','영→한 입력','한→영 입력'][mode]}</span></div><div class="row topgap"><strong>학습 진행률 <span id="progressPercent">${pct}%</span></strong><span class="muted" id="progressCount">${done}문제 완료 · ${q.items.length-done}문제 남음</span></div><div class="progress topgap" role="progressbar" aria-label="학습 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" id="quizProgress"><div style="width:${pct}%" id="progressFill"></div></div><div class="word">${esc(question)}</div>`;
+// 교재에 표시된 뜻을 우선하며, 품사는 사전 대조 여부를 구분합니다.
+// VERIFIED_POS는 교재의 의미와 품사를 명확히 연결해 별도 검토한 항목만 포함합니다.
+const VERIFIED_POS={
+ 'provide':'동사','develop':'동사','attitude':'명사','cultural':'형용사',
+ 'challenge':'명사 · 동사','amount':'명사 · 동사','social':'형용사',
+ 'improve':'동사','individual':'명사 · 형용사','require':'동사',
+ 'volunteer':'명사 · 동사','behave':'동사','inform':'동사','material':'명사',
+ 'employ':'동사','research':'명사 · 동사','artifact':'명사',
+ 'influence':'명사 · 동사','international':'형용사','relationship':'명사',
+ 'opportunity':'명사','environment':'명사','expense':'명사','local':'형용사',
+ 'involve':'동사','stress':'명사 · 동사','contain':'동사',
+ 'average':'명사 · 형용사 · 동사','consume':'동사','focus':'명사 · 동사',
+ 'encourage':'동사','determine':'동사','scold':'동사','impress':'동사',
+ 'poison':'명사 · 동사','object':'명사 · 동사','available':'형용사',
+ 'positive':'형용사','recognize':'동사','commodity':'명사',
+ 'profession':'명사','despite':'전치사','whereas':'접속사',
+ 'nevertheless':'부사','furthermore':'부사','except':'전치사 · 동사',
+ 'due':'형용사','present':'명사 · 동사 · 형용사',
+ 'content':'명사 · 형용사','novel':'명사 · 형용사',
+ 'secure':'형용사 · 동사','brief':'형용사 · 명사 · 동사',
+ 'complex':'형용사 · 명사','function':'명사 · 동사',
+ 'approach':'명사 · 동사','contact':'명사 · 동사',
+ 'account':'명사 · 동사','active':'형용사','species':'명사'
+};
+function inferredPos(w){
+ const raw=String(w.ko||'').trim();
+ const chunks=raw.split(/[;,；]/).map(x=>x.trim()).filter(Boolean);
+ const tags=new Set();
+ for(const chunk of chunks){
+  const c=chunk.replace(/\([^)]*\)|\[[^\]]*\]|<[^>]*>/g,'').trim();
+  if(/(?:하다|되다|시키다|있다|없다|주다|받다|가다|오다|나다|짓다|들다|쓰다|보다|먹다|마시다|찾다|얻다|잃다|깨다|잡다|막다|끌다|밀다|치다|펴다|젓다|뛰다|걷다|달리다|읽다|알다|모르다|살다|내다|돌다|넘다|삼키다|흐르다|서다|앉다|뜨다|지다|붙다|떨어지다|생기다|바라다|넘어지다|떠나다|빌리다|빌려주다|다르다|낫다|녹다|늘다|줄다|열다|닫다|오르다|내리다|지키다|버리다|고르다|돕다|꾸다|쏘다|꿰다|씹다|깨물다|사라지다|나타나다|이어지다|돌아오다|이루다|불다|울다|묻다|묶다|끊다|풀다|놓다|되돌리다)\s*$/.test(c))tags.add('동사');
+  else if(/(?:적인|스러운|러운|하는|있는|없는|같은|높은|낮은|빠른|느린|좋은|나쁜|많은|적은|드문|깊은|넓은|좁은|긴|짧은|어려운|쉬운|큰|작은|새로운|오래된|가까운|먼|강한|약한|밝은|어두운|옳은|그른|흔한|희귀한|명백한|유능한|안전한|가능한|불가능한|정확한|충분한|복잡한|간단한|비슷한|동일한|다른|~의|의)\s*$/.test(c))tags.add('형용사');
+  else if(/(?:게|히|로|에|에서|뒤에|전에|후에|없이|도록|만큼)\s*$/.test(c))tags.add('부사·기타');
+  else if(c)tags.add('명사');
+ }
+ return [...tags].join(' · ')||'확인 필요';
+}
+function partOfSpeech(w){return VERIFIED_POS[w.en.toLowerCase()]||inferredPos(w)}
+function posStatus(w){return Object.prototype.hasOwnProperty.call(VERIFIED_POS,w.en.toLowerCase())?'검토됨':'교재 뜻 기반 추정'}
+// 외부 음원 없이 오프라인에서도 동작하는 정오답 효과음
+let soundContext=null;
+function playFeedbackSound(correct){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  if(!soundContext)soundContext=new AC();
+  if(soundContext.state==='suspended')soundContext.resume().catch(()=>{});
+  const t=soundContext.currentTime+0.015;
+  const tones=correct?[[660,0,.10],[880,.13,.17]]:[[310,0,.14],[220,.17,.22]];
+  tones.forEach(([hz,delay,duration])=>{
+   const osc=soundContext.createOscillator(),gain=soundContext.createGain();
+   osc.type=correct?'sine':'triangle';osc.frequency.setValueAtTime(hz,t+delay);
+   gain.gain.setValueAtTime(.0001,t+delay);
+   gain.gain.exponentialRampToValueAtTime(correct?.10:.075,t+delay+.015);
+   gain.gain.exponentialRampToValueAtTime(.0001,t+delay+duration);
+   osc.connect(gain);gain.connect(soundContext.destination);
+   osc.start(t+delay);osc.stop(t+delay+duration+.01);
+  });
+ }catch(e){/* 무음 모드 또는 오디오 미지원 환경에서는 조용히 진행 */}
+}
+function showQuestion(){stopAdvance();if(session)session.started=now();document.body.classList.remove("answer-revealed");const q=session;if(q.index>=q.items.length){const n=q.answers.filter(a=>a.kind==='correct').length;$('#quiz').innerHTML=`<div class="card"><h2>시험 완료</h2><div class="word">${n} / ${q.items.length}</div><p style="text-align:center">학습 진행률 100% · 정답률 ${Math.round(n/q.items.length*100)}%</p><p class="muted" style="text-align:center">틀린 단어는 오답노트에 저장됩니다. 시험 중 추가 출제하지 않습니다.</p><button id="again" style="width:100%">다른 시험 보기</button><button id="viewMistakes" class="secondary" style="width:100%;margin-top:10px">오답노트 보기</button></div>`;$('#again').onclick=()=>{stopAdvance();session=null;quiz()};$('#viewMistakes').onclick=()=>{session=null;go('mistakes')};return}const w=q.items[q.index], mode=q.mode;let question=mode===1||mode===3?w.en:meanings(w)[0];let done=q.index+(q.checked?1:0), pct=Math.round(done/q.items.length*1000)/10;let html=`<div class="card"><div class="row"><span class="pill">${q.index+1} / ${q.items.length}</span><span class="muted">DAY ${w.day} · ${['','영→한 선택','한→영 선택','영→한 입력','한→영 입력'][mode]}</span></div><div class="row topgap"><strong>학습 진행률 <span id="progressPercent">${pct}%</span></strong><span class="muted" id="progressCount">${done}문제 완료 · ${q.items.length-done}문제 남음</span></div><div class="progress topgap" role="progressbar" aria-label="학습 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}" id="quizProgress"><div style="width:${pct}%" id="progressFill"></div></div><div class="word">${esc(question)}</div><div class="pos-hint" aria-label="품사">품사 <strong>${esc(partOfSpeech(w))}</strong><small> · ${esc(posStatus(w))}</small></div>`;
 if(mode<=2){const target=mode===1?meanings(w)[0]:w.en;const others=state.words.filter(x=>x.id!==w.id&&Number(x.day)===Number(w.day)).sort(()=>Math.random()-.5).slice(0,3).map(x=>mode===1?meanings(x)[0]:x.en);const opts=[target,...others].sort(()=>Math.random()-.5);html+=`<div class="stack">${opts.map(o=>`<button class="choice" data-choice="${esc(o)}">${esc(o)}</button>`).join('')}</div>`}else html+=`<input id="answer" placeholder="정답을 입력하세요" autocomplete="off" autocapitalize="none" spellcheck="false"><button id="check" style="width:100%;margin-top:12px">채점하기</button>`;
 html+=`<div id="feedback"></div></div><button class="secondary" id="quit">시험 종료</button>`;$('#quiz').innerHTML=html;$('#quit').onclick=()=>{if(confirm('시험을 종료할까요?')){stopAdvance();session=null;quiz()}};
-function check(ans){if(q.checked)return;q.checked=true;document.body.classList.add("answer-revealed");if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();let result=mode<=2?{kind:clean(ans)===clean(mode===1?meanings(w)[0]:w.en)?'correct':'wrong',why:'정답: '+(mode===1?meanings(w).join(', '):w.en)}:judge(w,ans,mode);const elapsed=now()-q.started;const record={id:Date.now()+Math.random(),wordId:w.id,en:w.en,mode,answer:ans,kind:result.kind,date:new Date().toISOString(),elapsed};state.results.push(record);q.answers.push(record);state.reviews[w.id]={last:result.kind,at:record.date};if(result.kind!=='correct')state.mistakes[w.id]={at:record.date,answer:ans,mode};schedule(w,mode,result.kind,'normal',elapsed);save();const completed=q.index+1;const percentage=Math.round(completed/q.items.length*1000)/10;$('#progressPercent').textContent=percentage+'%';$('#progressCount').textContent=`${completed}문제 완료 · ${q.items.length-completed}문제 남음`;$('#progressFill').style.width=percentage+'%';$('#quizProgress').setAttribute('aria-valuenow',percentage);const f=$('#feedback');const name={correct:'정답',partial:'부분 정답',wrong:'오답'};f.innerHTML=`<div class="feedback ${result.kind==='correct'?'good':result.kind==='partial'?'partial':'bad'}"><div class="verdict-line"><span class="verdict-mark">${result.kind==='correct'?'✓':result.kind==='partial'?'△':'×'}</span><strong id="verdict">${name[result.kind]}</strong></div>${result.kind==='partial'?'<p class="muted">입력한 표현이 일부 일치합니다. 아래 뜻을 확인하세요.</p>':''}<div class="meaning-section"><div class="meaning-label">정식 뜻 <span>단어장에 등록된 의미</span></div><div class="meaning-text">${esc(w.ko)}</div></div>${acceptedMeanings(w).filter(x=>!pdfVariants(w.ko).some(y=>clean(x)===clean(y))).length?`<div class="meaning-section alt"><div class="meaning-label">추가 인정 표현</div><div class="meaning-text">${esc(acceptedMeanings(w).filter(x=>!pdfVariants(w.ko).some(y=>clean(x)===clean(y))).slice(0,3).join(" · "))}</div></div>`:""}${mode===4?`<div class="meaning-section"><div class="meaning-label">정답 영단어</div><div class="meaning-text">${esc(w.en)}</div></div>`:''}</div><div class="confidence-row"><button type="button" class="confidence" data-confidence="hard">어려웠음</button><button type="button" class="confidence" data-confidence="easy">쉬웠음</button></div><button id="next" style="width:100%;margin-top:16px">${q.index+1===q.items.length?'결과 보기':'다음 문제'} →</button>`;$('#next').onclick=nextQuestion;$$('[data-confidence]').forEach(b=>b.onclick=()=>{schedule(w,mode,result.kind,b.dataset.confidence,elapsed);save();$$('[data-confidence]').forEach(x=>x.classList.toggle('selected',x===b))});
+function check(ans){if(q.checked)return;q.checked=true;document.body.classList.add("answer-revealed");if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();let result=mode<=2?{kind:clean(ans)===clean(mode===1?meanings(w)[0]:w.en)?'correct':'wrong',why:'정답: '+(mode===1?meanings(w).join(', '):w.en)}:judge(w,ans,mode);playFeedbackSound(result.kind==='correct');const elapsed=now()-q.started;const record={id:Date.now()+Math.random(),wordId:w.id,en:w.en,mode,answer:ans,kind:result.kind,date:new Date().toISOString(),elapsed};state.results.push(record);q.answers.push(record);state.reviews[w.id]={last:result.kind,at:record.date};if(result.kind!=='correct')state.mistakes[w.id]={at:record.date,answer:ans,mode};schedule(w,mode,result.kind,'normal',elapsed);save();const completed=q.index+1;const percentage=Math.round(completed/q.items.length*1000)/10;$('#progressPercent').textContent=percentage+'%';$('#progressCount').textContent=`${completed}문제 완료 · ${q.items.length-completed}문제 남음`;$('#progressFill').style.width=percentage+'%';$('#quizProgress').setAttribute('aria-valuenow',percentage);const f=$('#feedback');const name={correct:'정답',partial:'부분 정답',wrong:'오답'};f.innerHTML=`<div class="feedback ${result.kind==='correct'?'good':result.kind==='partial'?'partial':'bad'}"><div class="verdict-line"><span class="verdict-mark">${result.kind==='correct'?'✓':result.kind==='partial'?'△':'×'}</span><strong id="verdict">${name[result.kind]}</strong></div>${result.kind==='partial'?'<p class="muted">입력한 표현이 일부 일치합니다. 아래 뜻을 확인하세요.</p>':''}<div class="meaning-section"><div class="meaning-label">정식 뜻 <span>품사: ${esc(partOfSpeech(w))} (${esc(posStatus(w))})</span></div><div class="meaning-text">${esc(w.ko)}</div></div>${acceptedMeanings(w).filter(x=>!pdfVariants(w.ko).some(y=>clean(x)===clean(y))).length?`<div class="meaning-section alt"><div class="meaning-label">추가 인정 표현</div><div class="meaning-text">${esc(acceptedMeanings(w).filter(x=>!pdfVariants(w.ko).some(y=>clean(x)===clean(y))).slice(0,3).join(" · "))}</div></div>`:""}${mode===4?`<div class="meaning-section"><div class="meaning-label">정답 영단어</div><div class="meaning-text">${esc(w.en)}</div></div>`:''}</div><div class="confidence-row"><button type="button" class="confidence" data-confidence="hard">어려웠음</button><button type="button" class="confidence" data-confidence="easy">쉬웠음</button></div><button id="next" style="width:100%;margin-top:16px">${q.index+1===q.items.length?'결과 보기':'다음 문제'} →</button>`;$('#next').onclick=nextQuestion;$$('[data-confidence]').forEach(b=>b.onclick=()=>{schedule(w,mode,result.kind,b.dataset.confidence,elapsed);save();$$('[data-confidence]').forEach(x=>x.classList.toggle('selected',x===b))});
 stopAdvance();
 let remaining=5;
 const nextButton=$('#next');
