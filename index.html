@@ -158,4 +158,28 @@ body.quiz-active #quiz .pos-hint{margin:0 0 14px}
 .overview-card p{margin:14px 0 0;font-size:11px}
 @media(max-width:390px){.learning-hero{padding:23px 19px}.hero-progress strong{font-size:45px}.hero-topline span{font-size:9px}}
 @media(prefers-reduced-motion:reduce){#quiz #feedback.motion-feedback>.feedback-motion-inner{transition:none!important}#quiz #feedback.motion-feedback .feedback,#quiz #feedback.motion-feedback .meaning-section,#quiz #feedback.motion-feedback .meaning-text{transition:none!important}#quiz #feedback.motion-feedback.is-open .feedback,#quiz #feedback.motion-feedback.is-open .meaning-section,#quiz #feedback.motion-feedback.is-open .meaning-text{opacity:1;transform:none}}
-</style></head><body><main><header><div><h1>단어마스터</h1><div class="muted">뜻을 이해하는 영단어 학습</div></div><div class="header-build"><span class="pill">오프라인 지원</span><span class="build-label">최종 업데이트 · v25</span><time datetime="2026-11-19T19:43:12+09:00" title="한국 표준시(KST) 기준">2026.11.19 19:43:12</time></div></header><section id="home"></section><section id="quiz" class="hidden"></section><section id="words" class="hidden"></section><section id="mistakes" class="hidden"></section><section id="history" class="hidden"></section></main><nav class="tabs"><div><button data-tab="home" class="active">홈</button><button data-tab="quiz">시험</button><button data-tab="words">단어장</button><button data-tab="history">기록</button></div></nav><script src="wordmaster-data.js?v=25"></script><script src="synonyms-data.js?v=25"></script><script src="app.js?v=25"></script></body></html>
+
+/* v26: English speech settings and compact, accessible pronunciation controls */
+.voice-setting{display:flex;justify-content:space-between;align-items:center;gap:13px;margin-top:18px;padding:15px 14px;background:#f5f8ff;border:1px solid #e3eafa;border-radius:15px}
+.voice-setting-copy{display:flex;flex-direction:column;gap:5px;min-width:0}
+.voice-setting-copy strong{font-size:14px;color:#1c335b;font-weight:800}
+.voice-setting-copy>span{font-size:11px;color:#6f7f99;line-height:1.5}
+.voice-toggle-label{display:flex!important;align-items:center;justify-content:center;flex:none;margin:0!important;padding:4px;cursor:pointer}
+.voice-autoplay-control{position:absolute;width:1px!important;height:1px!important;opacity:0;padding:0!important;margin:0;pointer-events:none}
+.voice-switch-track{width:51px;height:29px;border-radius:99px;background:#c3cad6;display:flex;align-items:center;padding:3px;transition:background-color .22s ease;box-shadow:inset 0 1px 3px #172b5515}
+.voice-switch-track>span{width:23px;height:23px;border-radius:50%;background:#fff;box-shadow:0 2px 6px #13213d24;transition:transform .22s cubic-bezier(.22,1,.36,1)}
+.voice-autoplay-control:checked+.voice-switch-track{background:#2e57bf}
+.voice-autoplay-control:checked+.voice-switch-track>span{transform:translateX(22px)}
+.voice-autoplay-control:focus-visible+.voice-switch-track{outline:3px solid #90a9f4;outline-offset:2px}
+.voice-autoplay-control:disabled+.voice-switch-track{opacity:.4}
+.voice-setting-hint{display:flex;align-items:center;gap:10px;margin-top:12px;color:#7887a0;font-size:11px}
+.pronounce-btn{display:inline-flex;gap:5px;align-items:center;justify-content:center;min-height:32px;padding:6px 12px!important;border:1px solid #dce6f6!important;border-radius:99px!important;background:#f0f5ff!important;color:#2854a7!important;font-weight:750!important;font-size:12px!important;white-space:nowrap;touch-action:manipulation}
+.pronounce-btn:active{background:#e1ecff!important}
+.pronounce-btn:focus-visible{outline:3px solid #92aaf1;outline-offset:2px}
+.pronounce-actions{display:flex;justify-content:center;align-items:center;gap:9px;margin:-8px 0 10px}
+.pronounce-state{font-size:11px;color:#7d8aa3}
+.pronounce-in-result{margin-top:10px}
+.pronounce-inline{min-width:35px;min-height:30px;padding:4px 8px!important;margin:0 2px 0 6px}
+#quiz .voice-setting{margin:19px 0 14px}
+@media(prefers-reduced-motion:reduce){.voice-switch-track,.voice-switch-track>span{transition:none!important}}
+</style></head><body><main><header><div><h1>단어마스터</h1><div class="muted">뜻을 이해하는 영단어 학습</div></div><div class="header-build"><span class="pill">오프라인 지원</span><span class="build-label">최종 업데이트 · v26</span><time datetime="2026-11-19T20:36:28+09:00" title="한국 표준시(KST) 기준">2026.11.19 20:36:28</time></div></header><section id="home"></section><section id="quiz" class="hidden"></section><section id="words" class="hidden"></section><section id="mistakes" class="hidden"></section><section id="history" class="hidden"></section></main><nav class="tabs"><div><button data-tab="home" class="active">홈</button><button data-tab="quiz">시험</button><button data-tab="words">단어장</button><button data-tab="history">기록</button></div></nav><script src="wordmaster-data.js?v=26"></script><script src="synonyms-data.js?v=26"></script><script src="app.js?v=26"></script></body></html>
