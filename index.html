@@ -92,4 +92,14 @@ html,body,button,.btn,.tabs,.card,.choice,.seg-btn{touch-action:manipulation}
 @keyframes verdictBloom{0%{opacity:.2;transform:scale(.72)}55%{opacity:1;transform:scale(1.12)}100%{transform:scale(1)}}
 @keyframes resultText{0%{opacity:0;transform:translateY(7px)}100%{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){#quiz .choice{transition:none!important}#quiz .result-entrance,#quiz .result-entrance *{animation:none!important}}
-</style></head><body><main><header><div><h1>단어마스터</h1><div class="muted">뜻을 이해하는 영단어 학습</div></div><span class="pill">오프라인 지원</span></header><section id="home"></section><section id="quiz" class="hidden"></section><section id="words" class="hidden"></section><section id="mistakes" class="hidden"></section><section id="history" class="hidden"></section></main><nav class="tabs"><div><button data-tab="home" class="active">홈</button><button data-tab="quiz">시험</button><button data-tab="words">단어장</button><button data-tab="history">기록</button></div></nav><script src="wordmaster-data.js?v=21"></script><script src="synonyms-data.js?v=21"></script><script src="app.js?v=21"></script></body></html>
+/* v23: smooth expansion of the Korean meaning panel, not just its opacity */
+#quiz .feedback.feedback-expanding{transition:height 900ms cubic-bezier(.22,1,.36,1),opacity 750ms ease,margin-top 900ms cubic-bezier(.22,1,.36,1)!important;will-change:height,opacity}
+#quiz .result-entrance{animation:none!important}
+#quiz .result-entrance .verdict-mark{animation:verdictBloom 950ms cubic-bezier(.22,1,.36,1) both}
+#quiz .result-entrance .verdict-line strong{animation:resultText 850ms ease both}
+#quiz .result-entrance .meaning-section{animation:meaningSoftReveal 1050ms cubic-bezier(.22,1,.36,1) both;animation-delay:170ms}
+#quiz .result-entrance .meaning-section.alt{animation-delay:340ms}
+#quiz .result-entrance .meaning-text{animation:meaningSoftReveal 1100ms ease both;animation-delay:260ms}
+@keyframes meaningSoftReveal{0%{opacity:0;filter:blur(3px);transform:translateY(13px)}100%{opacity:1;filter:blur(0);transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){#quiz .feedback.feedback-expanding{transition:none!important}#quiz .result-entrance .meaning-section,#quiz .result-entrance .meaning-text{animation:none!important}}
+</style></head><body><main><header><div><h1>단어마스터</h1><div class="muted">뜻을 이해하는 영단어 학습</div></div><span class="pill">오프라인 지원</span></header><section id="home"></section><section id="quiz" class="hidden"></section><section id="words" class="hidden"></section><section id="mistakes" class="hidden"></section><section id="history" class="hidden"></section></main><nav class="tabs"><div><button data-tab="home" class="active">홈</button><button data-tab="quiz">시험</button><button data-tab="words">단어장</button><button data-tab="history">기록</button></div></nav><script src="wordmaster-data.js?v=23"></script><script src="synonyms-data.js?v=23"></script><script src="app.js?v=23"></script></body></html>
