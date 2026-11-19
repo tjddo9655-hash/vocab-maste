@@ -1,0 +1,1 @@
+v16: iPhone Safari 더블탭 화면 확대 방지. touch-action: manipulation 적용. 핀치 확대는 접근성을 위해 유지. 서비스워커 캐시 버전 갱신. 기존 학습 데이터 유지.
