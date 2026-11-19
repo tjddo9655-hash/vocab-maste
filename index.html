@@ -28,4 +28,23 @@ body.answer-revealed .tabs{padding-top:6px;padding-bottom:calc(6px + env(safe-ar
 body.answer-revealed .tabs button{padding:10px 3px}
 @media(min-width:700px){body.answer-revealed #quiz #next{width:min(calc(100% - 40px),540px)!important}}
 @media(max-height:760px){body.answer-revealed #quiz .word{margin:9px 0 12px}body.answer-revealed #quiz .meaning-section{padding:8px 10px}}
-</style></head><body><main><header><div><h1>단어마스터</h1><div class="muted">뜻을 이해하는 영단어 학습</div></div><span class="pill">오프라인 지원</span></header><section id="home"></section><section id="quiz" class="hidden"></section><section id="words" class="hidden"></section><section id="history" class="hidden"></section></main><nav class="tabs"><div><button data-tab="home" class="active">홈</button><button data-tab="quiz">시험</button><button data-tab="words">단어장</button><button data-tab="history">기록</button></div></nav><script src="wordmaster-data.js?v=9.0"></script><script src="app.js?v=9.0"></script></body></html>
+
+/* v10 compact answer view: no duplicate tall cards; visible next action */
+body.answer-revealed header{display:none!important}
+body.answer-revealed main{padding-top:4px!important;padding-bottom:calc(138px + env(safe-area-inset-bottom))!important}
+body.answer-revealed #quiz>.card{padding:12px 14px!important;margin:0!important}
+body.answer-revealed #quiz .word{font-size:clamp(30px,8vw,42px)!important;margin:12px 0 16px!important;line-height:1.1!important}
+body.answer-revealed #quiz .feedback{margin-top:9px!important;padding:10px!important;border-radius:12px!important}
+body.answer-revealed #quiz .meaning-section{padding:8px 10px!important;margin-top:6px!important;border-radius:10px!important}
+body.answer-revealed #quiz .meaning-label{font-size:11px!important;margin-bottom:3px!important}
+body.answer-revealed #quiz .meaning-label span{display:none!important}
+body.answer-revealed #quiz .meaning-text{font-size:13px!important;line-height:1.35!important}
+body.answer-revealed #quiz .verdict-line{margin-bottom:5px!important;font-size:14px!important}
+body.answer-revealed #quiz #check{display:none!important}
+body.answer-revealed #quiz input{padding:9px 12px!important;font-size:14px!important}
+body.answer-revealed #quiz #next{position:fixed!important;bottom:calc(76px + env(safe-area-inset-bottom))!important;left:50%!important;transform:translateX(-50%)!important;z-index:100!important;width:min(calc(100vw - 28px),530px)!important;min-height:50px!important;margin:0!important;padding:10px 12px!important;box-shadow:0 3px 14px #1c263b33!important}
+.countdown-badge{display:inline-block;background:#fff;color:#172b55;border-radius:9px;padding:3px 9px;margin:0 7px;font-variant-numeric:tabular-nums}
+body.answer-revealed #quiz #quit{display:none!important}
+body.answer-revealed .tabs{z-index:40!important}
+@media(max-height:760px){body.answer-revealed #quiz .word{margin:6px 0 10px!important}}
+</style></head><body><main><header><div><h1>단어마스터</h1><div class="muted">뜻을 이해하는 영단어 학습</div></div><span class="pill">오프라인 지원</span></header><section id="home"></section><section id="quiz" class="hidden"></section><section id="words" class="hidden"></section><section id="history" class="hidden"></section></main><nav class="tabs"><div><button data-tab="home" class="active">홈</button><button data-tab="quiz">시험</button><button data-tab="words">단어장</button><button data-tab="history">기록</button></div></nav><script src="wordmaster-data.js?v=10.1"></script><script src="app.js?v=10.1"></script></body></html>
